@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Codex model picker",
-    "description": "Replaces the composer model menu with a Codex-style card whose reasoning effort is a draggable slider."
+    "title": "Model quick switch",
+    "description": "Replaces the composer model menu with a Codex-style card: a draggable reasoning-effort slider plus up to three one-click model+effort quick-switch chips."
   }
 }
