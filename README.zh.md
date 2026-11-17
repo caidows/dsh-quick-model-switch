@@ -1,4 +1,4 @@
-# dsh-codex-model-picker
+# dsh-quick-model-switch
 
 把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 输入框的模型选择换成 Codex 风格的卡片：顶部是推理强度，中间是当前模型，底部是一条可拖动的推理强度滑杆。
 
@@ -34,7 +34,7 @@
 ## 安装
 
 ```sh
-dsh plugin --profile web add github:caidows/dsh-codex-model-picker
+dsh plugin --profile web add github:caidows/dsh-quick-model-switch
 ```
 
 装好后刷新页面即可。插件在 `conversation.input.model` 槽位上以 `-1` 优先级注册，覆盖自带的模型选择器；停用或卸载插件就会恢复原样，不会留下状态。

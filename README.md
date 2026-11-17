@@ -1,4 +1,4 @@
-# dsh-codex-model-picker
+# dsh-quick-model-switch
 
 A Codex-style model picker for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) composer.
 
@@ -38,7 +38,7 @@ Configuring them in the plugin's own popover:
 ## Install
 
 ```sh
-dsh plugin --profile web add github:caidows/dsh-codex-model-picker
+dsh plugin --profile web add github:caidows/dsh-quick-model-switch
 ```
 
 Then reload the page. The plugin registers a client slot occupant at priority `-1` on `conversation.input.model`, shadowing the shipped picker; disabling or removing the plugin restores the stock picker with no state left behind.
