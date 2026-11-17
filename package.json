@@ -1,6 +1,6 @@
 {
   "name": "dsh-codex-model-picker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "description": "Codex-style model picker for the DeepSeek Harness composer: draggable reasoning-effort slider, quick-switch chips, model list.",
   "license": "MIT",

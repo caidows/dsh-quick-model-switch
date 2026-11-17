@@ -6,9 +6,17 @@ It replaces the composer's model menu with a small card — the reasoning effort
 
 ![icon](assets/icon.png)
 
-## Screenshot
+## Screenshots
 
 ![The picker card open above the composer, with the effort slider on "High"](assets/screenshot-1.png)
+
+Three quick-switch chips left of the model button:
+
+![Three quick-switch chips in the composer tool row: DeepSeek V4.1 Flash · High, Opus 5.5 · Medium, GPT-6 Astra · Medium](assets/screenshot-2.png)
+
+Configuring them in the plugin's own popover:
+
+![The quick-switch settings popover, with a model and an effort select for each of the three slots](assets/screenshot-3.png)
 
 ## Features
 

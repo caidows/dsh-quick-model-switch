@@ -6,6 +6,14 @@
 
 ![卡片展开在输入框上方，推理强度滑杆停在 High](assets/screenshot-1.png)
 
+模型按钮左边的三个快捷切换按钮：
+
+![输入框工具栏里的三个快捷切换按钮：DeepSeek V4.1 Flash · High、Opus 5.5 · Medium、GPT-6 Astra · Medium](assets/screenshot-2.png)
+
+在插件自己的设置里配置它们：
+
+![快捷切换设置弹层，三个槽位各有一个模型下拉和一个推理强度下拉](assets/screenshot-3.png)
+
 ## 功能
 
 - **Codex 风格卡片**：贴在输入框模型按钮上方，空间不够时自动翻到下方。
