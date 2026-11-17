@@ -41,11 +41,6 @@ const dictionaries = {
   }
 };
 
-function IconBolt(props) {
-  return h('svg', {viewBox: '0 0 20 20', width: 16, height: 16, fill: 'none', 'aria-hidden': true, ...props},
-    h('path', {d: 'M11.4 2.4 4.8 11h4.1l-.9 6.6L15.2 9h-4.2l.4-6.6Z', stroke: 'currentColor', strokeWidth: 1.5, strokeLinejoin: 'round', strokeLinecap: 'round'}));
-}
-
 function IconChevronDown(props) {
   return h('svg', {viewBox: '0 0 18 18', width: 14, height: 14, fill: 'none', 'aria-hidden': true, ...props},
     h('path', {d: 'M4.5 7 9 11.5 13.5 7', stroke: 'currentColor', strokeWidth: 1.4, strokeLinecap: 'round', strokeLinejoin: 'round'}));
@@ -697,7 +692,6 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
       setOpen(true);
     }
   },
-  h(IconBolt, {className: 'cmp-trigger-icon'}),
   labelNode,
   levels.length ? h('span', {className: 'cmp-trigger-sep'}, '·') : null,
   levels.length ? h('span', {className: 'cmp-trigger-effort'}, levels[displayIndex]?.name ?? '') : null,

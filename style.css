@@ -37,11 +37,6 @@
   cursor: default;
 }
 
-.cmp-trigger-icon {
-  flex: none;
-  display: var(--dsh-composer-model-icon-display, none);
-}
-
 .cmp-trigger-label {
   display: var(--dsh-composer-model-text-display, block);
   min-width: 0;
@@ -57,8 +52,8 @@
 }
 
 /* The effort name is the one thing worth keeping when the composer row goes
-   compact: without it the trigger degrades to a bolt plus a chevron, which
-   says nothing. It is short enough to survive the compact row on its own. */
+   compact: without it the trigger degrades to a lone chevron, which says
+   nothing. It is short enough to survive the compact row on its own. */
 .cmp-trigger-effort {
   display: block;
   flex: 0 1 auto;
