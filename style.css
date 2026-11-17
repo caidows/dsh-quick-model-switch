@@ -50,10 +50,21 @@
   white-space: nowrap;
 }
 
+.cmp-trigger-sep {
+  flex: none;
+  display: var(--dsh-composer-model-text-display, inline);
+  color: var(--dsw-alias-label-caption);
+}
+
+/* The effort name is the one thing worth keeping when the composer row goes
+   compact: without it the trigger degrades to a bolt plus a chevron, which
+   says nothing. It is short enough to survive the compact row on its own. */
 .cmp-trigger-effort {
-  display: var(--dsh-composer-model-text-display, block);
+  display: block;
+  flex: 0 1 auto;
   flex-shrink: 1000;
   min-width: 0;
+  max-width: 76px;
   overflow: hidden;
   color: var(--dsw-alias-label-caption);
   text-overflow: ellipsis;

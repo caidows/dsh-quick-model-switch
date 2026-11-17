@@ -699,7 +699,8 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
   },
   h(IconBolt, {className: 'cmp-trigger-icon'}),
   labelNode,
-  levels.length ? h('span', {className: 'cmp-trigger-effort'}, `· ${levels[displayIndex]?.name ?? ''}`) : null,
+  levels.length ? h('span', {className: 'cmp-trigger-sep'}, '·') : null,
+  levels.length ? h('span', {className: 'cmp-trigger-effort'}, levels[displayIndex]?.name ?? '') : null,
   h(IconChevronDown, {className: 'cmp-trigger-chevron', 'data-open': open ? 'true' : undefined}));
 
   const chips = picks.map((pick, slot) => {
