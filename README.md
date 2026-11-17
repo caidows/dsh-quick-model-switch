@@ -17,6 +17,7 @@ It replaces the composer's model menu with a small card — the reasoning effort
 - **No provider-default stop.** Levels come from the adapter's advertised `reasoning.efforts`. A model without a stored effort shows `medium` when available, otherwise its advertised default (or the middle level), never a synthetic "default" entry.
 - **`Off` stop** when the model advertises it; committing it sends `reasoningEffort: "off"`, which providers like Codex map to "no reasoning".
 - **Model list** with provider grouping, the current selection, badges, loading and error states, and keyboard navigation.
+- **Quick switch**: up to three saved model + effort pairs sit as chips in the composer tool row; one click switches both. The chips are configured in the plugin's own popover (the sliders button next to them), not hard-coded.
 - **Full keyboard support**: arrows move one stop, `Home`/`End` jump to the ends, `Escape` closes and returns focus.
 - **Theme-aware**: every color, radius and shadow comes from DSH theme tokens, light and dark.
 - **Chinese and English UI.**
@@ -35,6 +36,12 @@ dsh plugin --profile web add github:caidows/dsh-codex-model-picker
 Then reload the page. The plugin registers a client slot occupant at priority `-1` on `conversation.input.model`, shadowing the shipped picker; disabling or removing the plugin restores the stock picker with no state left behind.
 
 To install from a checkout, point `dsh plugin add` at the package directory instead.
+
+## Quick switch
+
+The three chips left of the model button are one-click model + reasoning-effort pairs. Click the sliders button beside them to open the settings popover: each slot has a model select and an effort select (the effort list follows whichever model you pick). Slots store `provider`, `model` and `effort`, so a click switches the session to exactly that combination through `session.selectModel`.
+
+The chips live in the browser's `localStorage` under `codex-model-picker:quick-picks:v1`, so they are per-profile rather than per-session, and they survive restarts. Clearing a slot in the popover removes its chip immediately.
 
 ## How it works
 

@@ -1,7 +1,7 @@
 window.__ModuleLoader__.load({id:'dsh-codex-model-picker',factory(require){
 const React = require('react');
 const {createPortal} = require('react-dom');
-const CSS = "/* Codex-style composer model picker: trigger + floating card with a\n   draggable reasoning-effort slider. All colors come from DSH theme tokens so\n   light/dark and custom themes follow automatically. */\n\n.cmp-trigger {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  min-width: 0;\n  max-width: 240px;\n  height: 28px;\n  padding: 0 4px 0 8px;\n  border: 0;\n  border-radius: var(--dsw-radius-sm);\n  background: none;\n  color: var(--dsw-alias-label-secondary);\n  font: inherit;\n  font-size: 13px;\n  font-weight: 400;\n  line-height: 20px;\n  cursor: pointer;\n}\n\n@media (hover: hover) {\n  .cmp-trigger:hover:not(:disabled) {\n    background: var(--dsw-alias-interactive-bg-hover);\n  }\n}\n\n.cmp-trigger:focus-visible {\n  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  outline-offset: 1px;\n}\n\n.cmp-trigger:disabled {\n  color: var(--dsw-alias-label-dimmed);\n  cursor: default;\n}\n\n.cmp-trigger-icon {\n  flex: none;\n  display: var(--dsh-composer-model-icon-display, none);\n}\n\n.cmp-trigger-label {\n  display: var(--dsh-composer-model-text-display, block);\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cmp-trigger-effort {\n  display: var(--dsh-composer-model-text-display, block);\n  flex-shrink: 1000;\n  min-width: 0;\n  overflow: hidden;\n  color: var(--dsw-alias-label-caption);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cmp-trigger-chevron {\n  flex: none;\n  color: var(--dsw-alias-label-caption);\n  transition: transform 0.12s ease;\n}\n\n.cmp-trigger-chevron[data-open='true'] {\n  transform: rotate(180deg);\n}\n\n/* ---------------------------------------------------------------- card --- */\n\n.cmp-card {\n  position: fixed;\n  z-index: 1000;\n  box-sizing: border-box;\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  padding: 14px 14px 16px;\n  border: 1px solid var(--dsw-alias-border-l1);\n  border-radius: 18px;\n  background: var(--dsw-specific-menu, var(--dsw-alias-bg-layer-1));\n  box-shadow:\n    0 1px 2px rgba(15, 23, 42, 0.06),\n    0 12px 30px rgba(15, 23, 42, 0.14),\n    var(--dsw-elevation-prominent);\n  backdrop-filter: var(--dsw-menu-backdrop-filter, none);\n  color: var(--dsw-alias-label-primary);\n  font-size: 13px;\n  line-height: 20px;\n  outline: none;\n  transform-origin: bottom center;\n  animation: cmp-card-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;\n}\n\n.cmp-card[data-placement='below'] {\n  transform-origin: top center;\n  animation-name: cmp-card-in-below;\n}\n\n@keyframes cmp-card-in {\n  from {\n    opacity: 0;\n    transform: translateY(10px) scale(0.96);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n\n@keyframes cmp-card-in-below {\n  from {\n    opacity: 0;\n    transform: translateY(-10px) scale(0.96);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n\n@keyframes cmp-effort-in {\n  from {\n    opacity: 0;\n    transform: translateY(3px);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .cmp-card,\n  .cmp-card[data-placement='below'] {\n    animation: none;\n  }\n  .cmp-effort {\n    animation: none;\n  }\n  .cmp-thumb,\n  .cmp-fill,\n  .cmp-dot {\n    transition: none;\n  }\n}\n\n.cmp-head {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 26px;\n}\n\n.cmp-effort {\n  max-width: 100%;\n  overflow: hidden;\n  color: var(--dsw-alias-state-business-primary);\n  font-size: 17px;\n  font-weight: 600;\n  line-height: 24px;\n  text-align: center;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  animation: cmp-effort-in 180ms cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.cmp-model {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 2px;\n  width: 100%;\n  height: 26px;\n  padding: 0 6px;\n  border: 0;\n  border-radius: 8px;\n  background: none;\n  color: var(--dsw-alias-label-secondary);\n  font: inherit;\n  font-size: 13px;\n  cursor: pointer;\n}\n\n@media (hover: hover) {\n  .cmp-model:hover:not(:disabled) {\n    background: var(--dsw-alias-interactive-bg-hover);\n  }\n}\n\n.cmp-model:focus-visible {\n  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  outline-offset: 0;\n}\n\n.cmp-model:disabled {\n  color: var(--dsw-alias-label-dimmed);\n  cursor: default;\n}\n\n.cmp-model-name {\n  min-width: 0;\n  overflow: hidden;\n  color: var(--dsw-alias-label-primary);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cmp-model-name-muted {\n  color: var(--dsw-alias-label-tertiary);\n}\n\n.cmp-model-chevron {\n  flex: none;\n  color: var(--dsw-alias-label-caption);\n  transition: transform 0.12s ease;\n}\n\n.cmp-model-chevron[data-open='true'] {\n  transform: rotate(90deg);\n}\n\n/* ------------------------------------------------------------ model list --- */\n\n.cmp-list {\n  display: flex;\n  flex-direction: column;\n  gap: 1px;\n  max-height: 228px;\n  margin: 0 -4px -4px;\n  padding: 4px;\n  overflow-y: auto;\n  overscroll-behavior: contain;\n  border-top: 1px solid var(--dsw-alias-border-l1);\n  border-radius: 10px;\n  scrollbar-width: thin;\n  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2) transparent;\n}\n\n.cmp-group-head {\n  padding: 6px 8px 2px;\n  color: var(--dsw-alias-label-tertiary);\n  font-size: 11px;\n  line-height: 16px;\n  user-select: none;\n}\n\n.cmp-option {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  width: 100%;\n  min-height: 30px;\n  padding: 0 8px;\n  border: 0;\n  border-radius: 8px;\n  background: none;\n  color: inherit;\n  font: inherit;\n  font-size: 13px;\n  text-align: left;\n  cursor: pointer;\n}\n\n@media (hover: hover) {\n  .cmp-option:hover {\n    background: var(--dsw-alias-interactive-bg-hover);\n  }\n}\n\n.cmp-option:focus-visible {\n  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  outline-offset: -2px;\n}\n\n.cmp-option[data-selected='true'] {\n  font-weight: 600;\n}\n\n.cmp-option-name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cmp-option-check {\n  flex: none;\n  color: var(--dsw-alias-state-business-primary);\n}\n\n.cmp-badge {\n  flex: none;\n  padding: 0 5px;\n  border-radius: 4px;\n  background: var(--dsw-alias-bg-module-platform);\n  color: var(--dsw-alias-label-caption);\n  font-size: 10px;\n  font-weight: 400;\n  line-height: 16px;\n}\n\n.cmp-note {\n  padding: 8px;\n  color: var(--dsw-alias-label-tertiary);\n  font-size: 12px;\n  line-height: 18px;\n}\n\n.cmp-error {\n  margin: -2px 0 0;\n  padding: 6px 8px;\n  border-radius: var(--dsw-radius-md);\n  background: var(--dsw-alias-interactive-bg-hover-danger);\n  color: var(--dsw-alias-state-error-primary);\n  font-size: 12px;\n  line-height: 16px;\n}\n\n/* --------------------------------------------------------------- slider --- */\n\n.cmp-slider {\n  position: relative;\n  height: 34px;\n  margin-top: 2px;\n  border-radius: 999px;\n  background: color-mix(in srgb, var(--dsw-alias-label-primary) 10%, transparent);\n  cursor: pointer;\n  touch-action: none;\n  outline: none;\n  --cmp-pad: 18px;\n}\n\n.cmp-slider:focus-visible {\n  box-shadow: 0 0 0 2px var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n}\n\n.cmp-slider[aria-disabled='true'] {\n  cursor: default;\n  opacity: 0.55;\n}\n\n.cmp-fill {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  width: calc(var(--cmp-pad) + (100% - 2 * var(--cmp-pad)) * var(--cmp-ratio, 0));\n  border-radius: 999px;\n  background: var(--dsw-alias-state-business-primary);\n  transition: width 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.16s ease;\n}\n\n.cmp-slider[data-dragging='true'] .cmp-fill {\n  transition: width 130ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.16s ease;\n  filter: brightness(1.05) saturate(1.1);\n}\n\n.cmp-dot {\n  position: absolute;\n  top: 50%;\n  left: calc(var(--cmp-pad) + (100% - 2 * var(--cmp-pad)) * var(--cmp-pos, 0));\n  width: 6px;\n  height: 6px;\n  margin: -3px 0 0 -3px;\n  border-radius: 50%;\n  background: color-mix(in srgb, var(--dsw-alias-label-primary) 34%, transparent);\n  transition: transform 0.16s ease, background-color 0.16s ease;\n}\n\n.cmp-dot[data-covered='true'] {\n  background: rgba(255, 255, 255, 0.6);\n}\n\n.cmp-dot[data-current='true'] {\n  transform: scale(1.45);\n}\n\n.cmp-thumb {\n  position: absolute;\n  top: 50%;\n  left: calc(var(--cmp-pad) + (100% - 2 * var(--cmp-pad)) * var(--cmp-ratio, 0));\n  width: 30px;\n  height: 30px;\n  margin: -15px 0 0 -15px;\n  border-radius: 50%;\n  background: #fff;\n  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28), 0 0 0 0.5px rgba(0, 0, 0, 0.04);\n  transition: left 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.16s ease, box-shadow 0.16s ease;\n  pointer-events: none;\n}\n\n.cmp-slider[data-dragging='true'] .cmp-thumb {\n  transition: left 130ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 0.16s ease, box-shadow 0.16s ease;\n  transform: scale(1.14);\n  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.32), 0 0 0 0.5px rgba(0, 0, 0, 0.04);\n}\n";
+const CSS = "/* Codex-style composer model picker: trigger + floating card with a\r\n   draggable reasoning-effort slider. All colors come from DSH theme tokens so\r\n   light/dark and custom themes follow automatically. */\r\n\r\n.cmp-trigger {\r\n  display: flex;\r\n  align-items: center;\r\n  gap: 4px;\r\n  min-width: 0;\r\n  max-width: 240px;\r\n  height: 28px;\r\n  padding: 0 4px 0 8px;\r\n  border: 0;\r\n  border-radius: var(--dsw-radius-sm);\r\n  background: none;\r\n  color: var(--dsw-alias-label-secondary);\r\n  font: inherit;\r\n  font-size: 13px;\r\n  font-weight: 400;\r\n  line-height: 20px;\r\n  cursor: pointer;\r\n}\r\n\r\n@media (hover: hover) {\r\n  .cmp-trigger:hover:not(:disabled) {\r\n    background: var(--dsw-alias-interactive-bg-hover);\r\n  }\r\n}\r\n\r\n.cmp-trigger:focus-visible {\r\n  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\r\n  outline-offset: 1px;\r\n}\r\n\r\n.cmp-trigger:disabled {\r\n  color: var(--dsw-alias-label-dimmed);\r\n  cursor: default;\r\n}\r\n\r\n.cmp-trigger-icon {\r\n  flex: none;\r\n  display: var(--dsh-composer-model-icon-display, none);\r\n}\r\n\r\n.cmp-trigger-label {\r\n  display: var(--dsh-composer-model-text-display, block);\r\n  min-width: 0;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n\r\n.cmp-trigger-effort {\r\n  display: var(--dsh-composer-model-text-display, block);\r\n  flex-shrink: 1000;\r\n  min-width: 0;\r\n  overflow: hidden;\r\n  color: var(--dsw-alias-label-caption);\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n\r\n.cmp-trigger-chevron {\r\n  flex: none;\r\n  color: var(--dsw-alias-label-caption);\r\n  transition: transform 0.12s ease;\r\n}\r\n\r\n.cmp-trigger-chevron[data-open='true'] {\r\n  transform: rotate(180deg);\r\n}\r\n\r\n/* ---------------------------------------------------------------- card --- */\r\n\r\n.cmp-card {\r\n  position: fixed;\r\n  z-index: 1000;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 10px;\r\n  padding: 14px 14px 16px;\r\n  border: 1px solid var(--dsw-alias-border-l1);\r\n  border-radius: 18px;\r\n  background: var(--dsw-specific-menu, var(--dsw-alias-bg-layer-1));\r\n  box-shadow:\r\n    0 1px 2px rgba(15, 23, 42, 0.06),\r\n    0 12px 30px rgba(15, 23, 42, 0.14),\r\n    var(--dsw-elevation-prominent);\r\n  backdrop-filter: var(--dsw-menu-backdrop-filter, none);\r\n  color: var(--dsw-alias-label-primary);\r\n  font-size: 13px;\r\n  line-height: 20px;\r\n  outline: none;\r\n  transform-origin: bottom center;\r\n  animation: cmp-card-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;\r\n}\r\n\r\n.cmp-card[data-placement='below'] {\r\n  transform-origin: top center;\r\n  animation-name: cmp-card-in-below;\r\n}\r\n\r\n@keyframes cmp-card-in {\r\n  from {\r\n    opacity: 0;\r\n    transform: translateY(10px) scale(0.96);\r\n  }\r\n  to {\r\n    opacity: 1;\r\n    transform: translateY(0) scale(1);\r\n  }\r\n}\r\n\r\n@keyframes cmp-card-in-below {\r\n  from {\r\n    opacity: 0;\r\n    transform: translateY(-10px) scale(0.96);\r\n  }\r\n  to {\r\n    opacity: 1;\r\n    transform: translateY(0) scale(1);\r\n  }\r\n}\r\n\r\n@keyframes cmp-effort-in {\r\n  from {\r\n    opacity: 0;\r\n    transform: translateY(3px);\r\n  }\r\n  to {\r\n    opacity: 1;\r\n    transform: none;\r\n  }\r\n}\r\n\r\n@media (prefers-reduced-motion: reduce) {\r\n  .cmp-card,\r\n  .cmp-card[data-placement='below'] {\r\n    animation: none;\r\n  }\r\n  .cmp-effort {\r\n    animation: none;\r\n  }\r\n  .cmp-thumb,\r\n  .cmp-fill,\r\n  .cmp-dot {\r\n    transition: none;\r\n  }\r\n}\r\n\r\n.cmp-head {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  min-height: 26px;\r\n}\r\n\r\n.cmp-effort {\r\n  max-width: 100%;\r\n  overflow: hidden;\r\n  color: var(--dsw-alias-state-business-primary);\r\n  font-size: 17px;\r\n  font-weight: 600;\r\n  line-height: 24px;\r\n  text-align: center;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  animation: cmp-effort-in 180ms cubic-bezier(0.16, 1, 0.3, 1);\r\n}\r\n\r\n.cmp-model {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  gap: 2px;\r\n  width: 100%;\r\n  height: 26px;\r\n  padding: 0 6px;\r\n  border: 0;\r\n  border-radius: 8px;\r\n  background: none;\r\n  color: var(--dsw-alias-label-secondary);\r\n  font: inherit;\r\n  font-size: 13px;\r\n  cursor: pointer;\r\n}\r\n\r\n@media (hover: hover) {\r\n  .cmp-model:hover:not(:disabled) {\r\n    background: var(--dsw-alias-interactive-bg-hover);\r\n  }\r\n}\r\n\r\n.cmp-model:focus-visible {\r\n  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\r\n  outline-offset: 0;\r\n}\r\n\r\n.cmp-model:disabled {\r\n  color: var(--dsw-alias-label-dimmed);\r\n  cursor: default;\r\n}\r\n\r\n.cmp-model-name {\r\n  min-width: 0;\r\n  overflow: hidden;\r\n  color: var(--dsw-alias-label-primary);\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n\r\n.cmp-model-name-muted {\r\n  color: var(--dsw-alias-label-tertiary);\r\n}\r\n\r\n.cmp-model-chevron {\r\n  flex: none;\r\n  color: var(--dsw-alias-label-caption);\r\n  transition: transform 0.12s ease;\r\n}\r\n\r\n.cmp-model-chevron[data-open='true'] {\r\n  transform: rotate(90deg);\r\n}\r\n\r\n/* ------------------------------------------------------------ model list --- */\r\n\r\n.cmp-list {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 1px;\r\n  max-height: 228px;\r\n  margin: 0 -4px -4px;\r\n  padding: 4px;\r\n  overflow-y: auto;\r\n  overscroll-behavior: contain;\r\n  border-top: 1px solid var(--dsw-alias-border-l1);\r\n  border-radius: 10px;\r\n  scrollbar-width: thin;\r\n  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2) transparent;\r\n}\r\n\r\n.cmp-group-head {\r\n  padding: 6px 8px 2px;\r\n  color: var(--dsw-alias-label-tertiary);\r\n  font-size: 11px;\r\n  line-height: 16px;\r\n  user-select: none;\r\n}\r\n\r\n.cmp-option {\r\n  display: flex;\r\n  align-items: center;\r\n  gap: 8px;\r\n  width: 100%;\r\n  min-height: 30px;\r\n  padding: 0 8px;\r\n  border: 0;\r\n  border-radius: 8px;\r\n  background: none;\r\n  color: inherit;\r\n  font: inherit;\r\n  font-size: 13px;\r\n  text-align: left;\r\n  cursor: pointer;\r\n}\r\n\r\n@media (hover: hover) {\r\n  .cmp-option:hover {\r\n    background: var(--dsw-alias-interactive-bg-hover);\r\n  }\r\n}\r\n\r\n.cmp-option:focus-visible {\r\n  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\r\n  outline-offset: -2px;\r\n}\r\n\r\n.cmp-option[data-selected='true'] {\r\n  font-weight: 600;\r\n}\r\n\r\n.cmp-option-name {\r\n  flex: 1;\r\n  min-width: 0;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n\r\n.cmp-option-check {\r\n  flex: none;\r\n  color: var(--dsw-alias-state-business-primary);\r\n}\r\n\r\n.cmp-badge {\r\n  flex: none;\r\n  padding: 0 5px;\r\n  border-radius: 4px;\r\n  background: var(--dsw-alias-bg-module-platform);\r\n  color: var(--dsw-alias-label-caption);\r\n  font-size: 10px;\r\n  font-weight: 400;\r\n  line-height: 16px;\r\n}\r\n\r\n.cmp-note {\r\n  padding: 8px;\r\n  color: var(--dsw-alias-label-tertiary);\r\n  font-size: 12px;\r\n  line-height: 18px;\r\n}\r\n\r\n.cmp-error {\r\n  margin: -2px 0 0;\r\n  padding: 6px 8px;\r\n  border-radius: var(--dsw-radius-md);\r\n  background: var(--dsw-alias-interactive-bg-hover-danger);\r\n  color: var(--dsw-alias-state-error-primary);\r\n  font-size: 12px;\r\n  line-height: 16px;\r\n}\r\n\r\n/* --------------------------------------------------------------- slider --- */\r\n\r\n.cmp-slider {\r\n  position: relative;\r\n  height: 34px;\r\n  margin-top: 2px;\r\n  border-radius: 999px;\r\n  background: color-mix(in srgb, var(--dsw-alias-label-primary) 10%, transparent);\r\n  cursor: pointer;\r\n  touch-action: none;\r\n  outline: none;\r\n  --cmp-pad: 18px;\r\n}\r\n\r\n.cmp-slider:focus-visible {\r\n  box-shadow: 0 0 0 2px var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\r\n}\r\n\r\n.cmp-slider[aria-disabled='true'] {\r\n  cursor: default;\r\n  opacity: 0.55;\r\n}\r\n\r\n.cmp-fill {\r\n  position: absolute;\r\n  top: 0;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: calc(var(--cmp-pad) + (100% - 2 * var(--cmp-pad)) * var(--cmp-ratio, 0));\r\n  border-radius: 999px;\r\n  background: var(--dsw-alias-state-business-primary);\r\n  transition: width 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.16s ease;\r\n}\r\n\r\n.cmp-slider[data-dragging='true'] .cmp-fill {\r\n  transition: width 130ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.16s ease;\r\n  filter: brightness(1.05) saturate(1.1);\r\n}\r\n\r\n.cmp-dot {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: calc(var(--cmp-pad) + (100% - 2 * var(--cmp-pad)) * var(--cmp-pos, 0));\r\n  width: 6px;\r\n  height: 6px;\r\n  margin: -3px 0 0 -3px;\r\n  border-radius: 50%;\r\n  background: color-mix(in srgb, var(--dsw-alias-label-primary) 34%, transparent);\r\n  transition: transform 0.16s ease, background-color 0.16s ease;\r\n}\r\n\r\n.cmp-dot[data-covered='true'] {\r\n  background: rgba(255, 255, 255, 0.6);\r\n}\r\n\r\n.cmp-dot[data-current='true'] {\r\n  transform: scale(1.45);\r\n}\r\n\r\n.cmp-thumb {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: calc(var(--cmp-pad) + (100% - 2 * var(--cmp-pad)) * var(--cmp-ratio, 0));\r\n  width: 30px;\r\n  height: 30px;\r\n  margin: -15px 0 0 -15px;\r\n  border-radius: 50%;\r\n  background: #fff;\r\n  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28), 0 0 0 0.5px rgba(0, 0, 0, 0.04);\r\n  transition: left 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.16s ease, box-shadow 0.16s ease;\r\n  pointer-events: none;\r\n}\r\n\r\n.cmp-slider[data-dragging='true'] .cmp-thumb {\r\n  transition: left 130ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 0.16s ease, box-shadow 0.16s ease;\r\n  transform: scale(1.14);\r\n  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.32), 0 0 0 0.5px rgba(0, 0, 0, 0.04);\r\n}\r\n\r\n/* Quick-switch strip: saved model + effort pairs next to the model trigger. */\r\n.cmp-quicks {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  gap: 4px;\r\n  min-width: 0;\r\n  max-width: 100%;\r\n}\r\n\r\n.cmp-chip {\r\n  display: var(--dsh-composer-model-text-display, inline-flex);\r\n  align-items: center;\r\n  gap: 4px;\r\n  height: 26px;\r\n  max-width: 240px;\r\n  margin: 0;\r\n  padding: 0 8px;\r\n  border: 1px solid var(--dsw-alias-border-l2, rgba(15, 23, 42, 0.1));\r\n  border-radius: var(--dsw-radius-sm, 6px);\r\n  background: transparent;\r\n  color: var(--dsw-alias-label-secondary, #52525b);\r\n  font: inherit;\r\n  font-size: 12px;\r\n  line-height: 1;\r\n  white-space: nowrap;\r\n  cursor: pointer;\r\n  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;\r\n}\r\n\r\n.cmp-chip:hover:not(:disabled) {\r\n  border-color: var(--dsw-alias-border-l3, rgba(15, 23, 42, 0.18));\r\n  background: var(--dsw-alias-interactive-bg-hover, rgba(15, 23, 42, 0.06));\r\n  color: var(--dsw-alias-label-primary, #18181b);\r\n}\r\n\r\n.cmp-chip:focus-visible {\r\n  outline: none;\r\n  box-shadow: 0 0 0 2px var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary, #2f6bf6));\r\n}\r\n\r\n.cmp-chip:disabled {\r\n  opacity: 0.55;\r\n  cursor: default;\r\n}\r\n\r\n.cmp-chip-name {\r\n  flex: 0 1 auto;\r\n  min-width: 0;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n}\r\n\r\n.cmp-chip-effort {\r\n  flex: none;\r\n}\r\n\r\n.cmp-chip[data-current='true'] {\r\n  border-color: color-mix(in srgb, var(--dsw-alias-state-business-primary, #2f6bf6) 45%, transparent);\r\n  background: color-mix(in srgb, var(--dsw-alias-state-business-primary, #2f6bf6) 8%, transparent);\r\n  color: var(--dsw-alias-state-business-primary, #2f6bf6);\r\n}\r\n\r\n.cmp-chip[data-current='true'] .cmp-chip-effort {\r\n  color: color-mix(in srgb, var(--dsw-alias-state-business-primary, #2f6bf6) 75%, transparent);\r\n}\r\n\r\n.cmp-chip-effort {\r\n  color: var(--dsw-alias-label-tertiary, #71717a);\r\n}\r\n\r\n.cmp-chip-effort::before {\r\n  content: '·';\r\n  margin-right: 3px;\r\n  color: var(--dsw-alias-label-caption, #a1a1aa);\r\n}\r\n\r\n.cmp-chip-settings {\r\n  padding: 0 6px;\r\n  color: var(--dsw-alias-label-tertiary, #71717a);\r\n}\r\n\r\n/* Settings popover for the three quick-switch slots. */\r\n.cmp-settings {\r\n  flex-direction: column;\r\n  gap: 8px;\r\n  padding: 14px;\r\n  max-height: min(70vh, 460px);\r\n  overflow: auto;\r\n}\r\n\r\n.cmp-settings-head {\r\n  display: flex;\r\n  align-items: baseline;\r\n  justify-content: space-between;\r\n  gap: 8px;\r\n}\r\n\r\n.cmp-settings-title {\r\n  font-size: 13px;\r\n  font-weight: 600;\r\n  color: var(--dsw-alias-label-primary, #18181b);\r\n}\r\n\r\n.cmp-settings-count {\r\n  font-size: 11px;\r\n  color: var(--dsw-alias-label-caption, #a1a1aa);\r\n}\r\n\r\n.cmp-settings-hint {\r\n  font-size: 11.5px;\r\n  line-height: 1.5;\r\n  color: var(--dsw-alias-label-tertiary, #71717a);\r\n}\r\n\r\n.cmp-settings-row {\r\n  display: grid;\r\n  grid-template-columns: 16px minmax(0, 1fr) minmax(0, 92px) 20px;\r\n  align-items: center;\r\n  gap: 6px;\r\n}\r\n\r\n.cmp-settings-index {\r\n  font-size: 11px;\r\n  font-variant-numeric: tabular-nums;\r\n  color: var(--dsw-alias-label-caption, #a1a1aa);\r\n  text-align: center;\r\n}\r\n\r\n.cmp-select {\r\n  min-width: 0;\r\n  width: 100%;\r\n  height: 28px;\r\n  padding: 0 6px;\r\n  border: 1px solid var(--dsw-alias-border-l2, rgba(15, 23, 42, 0.12));\r\n  border-radius: var(--dsw-radius-sm, 6px);\r\n  background: var(--dsw-alias-bg-layer-1, rgba(255, 255, 255, 0.9));\r\n  color: var(--dsw-alias-label-primary, #18181b);\r\n  font: inherit;\r\n  font-size: 12px;\r\n}\r\n\r\n.cmp-select:focus-visible {\r\n  outline: none;\r\n  border-color: var(--dsw-alias-state-business-primary, #2f6bf6);\r\n  box-shadow: 0 0 0 2px var(--dsw-focus-ring-color, rgba(47, 107, 246, 0.35));\r\n}\r\n\r\n.cmp-select:disabled {\r\n  opacity: 0.5;\r\n}\r\n\r\n.cmp-settings-clear {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 20px;\r\n  height: 20px;\r\n  padding: 0;\r\n  border: 0;\r\n  border-radius: 6px;\r\n  background: transparent;\r\n  color: var(--dsw-alias-label-tertiary, #71717a);\r\n  font-size: 15px;\r\n  line-height: 1;\r\n  cursor: pointer;\r\n}\r\n\r\n.cmp-settings-clear:hover:not(:disabled) {\r\n  background: var(--dsw-alias-interactive-bg-hover, rgba(15, 23, 42, 0.07));\r\n  color: var(--dsw-alias-label-primary, #18181b);\r\n}\r\n\r\n.cmp-settings-clear:disabled {\r\n  opacity: 0.3;\r\n  cursor: default;\r\n}\r\n\r\n.cmp-settings-done {\r\n  align-self: flex-end;\r\n  height: 26px;\r\n  padding: 0 12px;\r\n  border: 1px solid var(--dsw-alias-border-l2, rgba(15, 23, 42, 0.12));\r\n  border-radius: var(--dsw-radius-sm, 6px);\r\n  background: transparent;\r\n  color: var(--dsw-alias-label-secondary, #52525b);\r\n  font: inherit;\r\n  font-size: 12px;\r\n  cursor: pointer;\r\n}\r\n\r\n.cmp-settings-done:hover {\r\n  background: var(--dsw-alias-interactive-bg-hover, rgba(15, 23, 42, 0.06));\r\n  color: var(--dsw-alias-label-primary, #18181b);\r\n}\r\n";
 const h = React.createElement;
 const NS = 'local-codex-picker';
 const dictionaries = {
@@ -15,7 +15,14 @@ const dictionaries = {
     empty: '没有可用的模型',
     unavailable: '子智能体会话不能切换模型',
     sessionInUse: '会话正在被占用，稍后再试',
-    failed: '切换失败：{message}'
+    failed: '切换失败：{message}',
+    quickSwitch: '快捷切换',
+    quickHint: '给三个常用组合各配一个模型与推理强度，点一下输入框上方的按钮就能切过去。',
+    quickAdd: '设置快捷切换',
+    quickUnset: '未设置',
+    quickClear: '清除',
+    quickDone: '完成',
+    quickMissing: '这个模型现在不可用'
   },
   en: {
     label: 'Model and reasoning effort',
@@ -27,7 +34,14 @@ const dictionaries = {
     empty: 'No models available',
     unavailable: 'Subagent sessions cannot switch models',
     sessionInUse: 'The session is in use — try again in a moment',
-    failed: 'Could not switch: {message}'
+    failed: 'Could not switch: {message}',
+    quickSwitch: 'Quick switch',
+    quickHint: 'Give each of the three slots a model and reasoning effort; one click in the composer switches to it.',
+    quickAdd: 'Set up quick switch',
+    quickUnset: 'Not set',
+    quickClear: 'Clear',
+    quickDone: 'Done',
+    quickMissing: 'That model is unavailable right now'
   }
 };
 
@@ -49,6 +63,60 @@ function IconChevronRight(props) {
 function IconCheck(props) {
   return h('svg', {viewBox: '0 0 18 18', width: 14, height: 14, fill: 'none', 'aria-hidden': true, ...props},
     h('path', {d: 'M3.8 9.6 7.2 13 14.4 5.4', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round'}));
+}
+
+function IconSliders(props) {
+  return h('svg', {viewBox: '0 0 18 18', width: 14, height: 14, fill: 'none', 'aria-hidden': true, ...props},
+    h('path', {d: 'M3 5.5h12M3 12.5h12', stroke: 'currentColor', strokeWidth: 1.4, strokeLinecap: 'round'}),
+    h('circle', {cx: 7, cy: 5.5, r: 1.8, fill: 'var(--cmp-quick-surface, #fff)', stroke: 'currentColor', strokeWidth: 1.4}),
+    h('circle', {cx: 11.5, cy: 12.5, r: 1.8, fill: 'var(--cmp-quick-surface, #fff)', stroke: 'currentColor', strokeWidth: 1.4}));
+}
+
+const QUICK_KEY = 'codex-model-picker:quick-picks:v1';
+const QUICK_LIMIT = 3;
+
+function readQuickPicks() {
+  const slots = [null, null, null];
+  try {
+    const raw = window.localStorage?.getItem(QUICK_KEY);
+    if (!raw) return slots;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return slots;
+    parsed
+      .filter((pick) => pick && typeof pick.provider === 'string' && typeof pick.model === 'string')
+      .slice(0, QUICK_LIMIT)
+      .forEach((pick, index) => {
+        slots[index] = {
+          provider: pick.provider,
+          model: pick.model,
+          effort: typeof pick.effort === 'string' ? pick.effort : undefined,
+          label: typeof pick.label === 'string' ? pick.label : pick.model,
+          effortLabel: typeof pick.effortLabel === 'string' ? pick.effortLabel : pick.effort
+        };
+      });
+    return slots;
+  } catch {
+    return slots;
+  }
+}
+
+function writeQuickPicks(picks) {
+  try {
+    window.localStorage?.setItem(QUICK_KEY, JSON.stringify(picks));
+  } catch {}
+}
+
+function makePick(group, model, effortId, t) {
+  const levels = effortLevels(model.reasoning, t);
+  const valid = levels.some((level) => level.id === effortId) ? effortId : preferredEffortId(levels, model.reasoning);
+  const level = levels.find((candidate) => candidate.id === valid);
+  return {
+    provider: group.id,
+    model: model.id,
+    effort: valid,
+    label: model.name ?? model.id,
+    effortLabel: level?.name
+  };
 }
 
 function findModel(groups, selection) {
@@ -229,6 +297,11 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
   const [position, setPosition] = React.useState(null);
   const [previewIndex, setPreviewIndex] = React.useState(null);
   const handlePreview = React.useCallback((next) => setPreviewIndex(next), []);
+  const [picks, setPicks] = React.useState(readQuickPicks);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [settingsPos, setSettingsPos] = React.useState(null);
+  const stripRef = React.useRef(null);
+  const settingsRef = React.useRef(null);
   const triggerRef = React.useRef(null);
   const cardRef = React.useRef(null);
   const loadRef = React.useRef(load);
@@ -290,6 +363,38 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
     loadRef.current?.();
   }, [open]);
 
+  const placeSettings = React.useCallback(() => {
+    const anchor = stripRef.current?.getBoundingClientRect();
+    if (!anchor) return;
+    const margin = 8;
+    const gap = 8;
+    const width = Math.min(404, window.innerWidth - margin * 2);
+    const height = settingsRef.current?.offsetHeight ?? 0;
+    const left = Math.max(margin, Math.min(anchor.left, window.innerWidth - width - margin));
+    let above = true;
+    let top = anchor.top - gap - height;
+    if (top < margin) {
+      above = false;
+      top = Math.min(anchor.bottom + gap, window.innerHeight - height - margin);
+    }
+    setSettingsPos({left, top, width, above});
+  }, []);
+
+  React.useLayoutEffect(() => {
+    if (settingsOpen) placeSettings();
+  }, [settingsOpen, picks, placeSettings]);
+
+  React.useEffect(() => {
+    if (!settingsOpen) return;
+    const onMove = () => placeSettings();
+    window.addEventListener('resize', onMove);
+    document.addEventListener('scroll', onMove, true);
+    return () => {
+      window.removeEventListener('resize', onMove);
+      document.removeEventListener('scroll', onMove, true);
+    };
+  }, [settingsOpen, placeSettings]);
+
   React.useEffect(() => {
     if (!open) return;
     const onMove = () => place();
@@ -302,18 +407,23 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
   }, [open, place]);
 
   React.useEffect(() => {
-    if (!open) return;
+    if (!open && !settingsOpen) return;
     const onDown = (event) => {
       const target = event.target;
-      if (triggerRef.current?.contains(target) || cardRef.current?.contains(target)) return;
+      if (triggerRef.current?.contains(target)) return;
+      if (cardRef.current?.contains(target)) return;
+      if (settingsRef.current?.contains(target)) return;
+      if (stripRef.current?.contains(target)) return;
       setOpen(false);
       setListOpen(false);
+      setSettingsOpen(false);
     };
     const onKey = (event) => {
       if (event.key !== 'Escape') return;
       event.stopPropagation();
       setOpen(false);
       setListOpen(false);
+      setSettingsOpen(false);
       triggerRef.current?.focus();
     };
     document.addEventListener('pointerdown', onDown, true);
@@ -322,7 +432,7 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
       document.removeEventListener('pointerdown', onDown, true);
       document.removeEventListener('keydown', onKey, true);
     };
-  }, [open]);
+  }, [open, settingsOpen]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -389,6 +499,59 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
     const next = event.key === 'ArrowDown' ? Math.min(options.length - 1, active + 1) : Math.max(0, active - 1);
     event.preventDefault();
     options[next]?.focus();
+  };
+
+  const assignSlot = (slot, pick) => {
+    const next = picks.slice();
+    next[slot] = pick;
+    setPicks(next);
+    writeQuickPicks(next);
+  };
+
+  const quickModelChange = (slot, value) => {
+    if (!value) {
+      assignSlot(slot, null);
+      return;
+    }
+    const [providerId, modelId] = value.split('\u001f');
+    const group = (state.groups || []).find((candidate) => candidate.id === providerId);
+    const model = group?.models?.find((candidate) => candidate.id === modelId);
+    if (!group || !model) return;
+    assignSlot(slot, makePick(group, model, picks[slot]?.effort, t));
+  };
+
+  const quickEffortChange = (slot, value) => {
+    const pick = picks[slot];
+    if (!pick) return;
+    const model = findModel(state.groups, pick)?.model;
+    const level = effortLevels(model?.reasoning, t).find((candidate) => candidate.id === value);
+    if (!level) return;
+    assignSlot(slot, {...pick, effort: level.id, effortLabel: level.name});
+  };
+
+  const applyPick = (pick) => {
+    if (!pick || busy || !available) return;
+    const model = findModel(state.groups, pick)?.model;
+    if (!model) {
+      setToast(t('quickMissing'));
+      return;
+    }
+    const nextLevels = effortLevels(model.reasoning, t);
+    const keep = pick.effort && nextLevels.some((level) => level.id === pick.effort)
+      ? pick.effort
+      : preferredEffortId(nextLevels, model.reasoning);
+    commit({
+      provider: pick.provider,
+      model: pick.model,
+      ...(keep === undefined ? {} : {reasoningEffort: keep})
+    });
+  };
+
+  const toggleSettings = () => {
+    setSettingsOpen((value) => {
+      if (!value) setOpen(false);
+      return !value;
+    });
   };
 
   const fallbackLabel = h('span', {className: 'cmp-trigger-label'}, modelName);
@@ -471,28 +634,115 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
   levels.length >= 2 ? h(EffortSlider, {levels, index, preview: previewIndex, busy, onCommit: commitEffortAt, onPreview: handlePreview, t}) : null,
   toast ? h('div', {className: 'cmp-error', role: 'alert'}, toast) : null), document.body) : null;
 
-  return h(React.Fragment, null,
-    h('button', {
-      ref: triggerRef,
+  const settingsPanel = settingsOpen ? createPortal(h('div', {
+    ref: settingsRef,
+    className: 'cmp-card cmp-settings',
+    role: 'dialog',
+    'aria-label': t('quickSwitch'),
+    'data-placement': settingsPos?.above === false ? 'below' : 'above',
+    style: settingsPos
+      ? {left: settingsPos.left, top: settingsPos.top, width: settingsPos.width}
+      : {left: 0, top: 0, visibility: 'hidden'}
+  },
+  h('div', {className: 'cmp-settings-head'},
+    h('span', {className: 'cmp-settings-title'}, t('quickSwitch')),
+    h('span', {className: 'cmp-settings-count'}, `${picks.filter(Boolean).length}/${QUICK_LIMIT}`)),
+  h('div', {className: 'cmp-settings-hint'}, t('quickHint')),
+  picks.map((pick, slot) => {
+    const slotModel = pick ? findModel(state.groups, pick)?.model : undefined;
+    const slotLevels = effortLevels(slotModel?.reasoning, t);
+    return h('div', {key: `slot-${slot}`, className: 'cmp-settings-row'},
+      h('span', {className: 'cmp-settings-index', 'aria-hidden': true}, String(slot + 1)),
+      h('select', {
+        className: 'cmp-select cmp-select-model',
+        value: pick ? `${pick.provider}\u001f${pick.model}` : '',
+        disabled: !available,
+        'aria-label': `${t('quickSwitch')} ${slot + 1}`,
+        onChange: (event) => quickModelChange(slot, event.target.value)
+      },
+      h('option', {value: ''}, t('quickUnset')),
+      (state.groups || []).map((group) => h('optgroup', {key: `sg-${slot}-${group.id}`, label: group.name ?? group.id},
+        (group.models || []).map((candidate) => h('option', {
+          key: `sm-${slot}-${group.id}-${candidate.id}`,
+          value: `${group.id}\u001f${candidate.id}`
+        }, candidate.name ?? candidate.id))))),
+      h('select', {
+        className: 'cmp-select cmp-select-effort',
+        value: pick?.effort ?? '',
+        disabled: !pick || slotLevels.length === 0,
+        'aria-label': `${t('effortLabel')} ${slot + 1}`,
+        onChange: (event) => quickEffortChange(slot, event.target.value)
+      },
+      slotLevels.map((level) => h('option', {key: `se-${slot}-${level.id}`, value: level.id}, level.name))),
+      h('button', {
+        type: 'button',
+        className: 'cmp-settings-clear',
+        title: t('quickClear'),
+        'aria-label': t('quickClear'),
+        disabled: !pick,
+        onClick: () => assignSlot(slot, null)
+      }, '×'));
+  }),
+  h('button', {type: 'button', className: 'cmp-settings-done', onClick: () => setSettingsOpen(false)}, t('quickDone'))), document.body) : null;
+
+  const trigger = h('button', {
+    ref: triggerRef,
+    type: 'button',
+    className: 'cmp-trigger',
+    'aria-haspopup': 'dialog',
+    'aria-expanded': open,
+    'aria-label': t('label'),
+    title: available ? t('label') : t('unavailable'),
+    disabled: locked || !available,
+    onClick: () => setOpen((value) => !value),
+    onKeyDown: (event) => {
+      if (event.key !== 'ArrowDown' || open) return;
+      event.preventDefault();
+      setOpen(true);
+    }
+  },
+  h(IconBolt, {className: 'cmp-trigger-icon'}),
+  labelNode,
+  levels.length ? h('span', {className: 'cmp-trigger-effort'}, `· ${levels[displayIndex]?.name ?? ''}`) : null,
+  h(IconChevronDown, {className: 'cmp-trigger-chevron', 'data-open': open ? 'true' : undefined}));
+
+  const chips = picks.map((pick, slot) => {
+    if (!pick) return null;
+    const isCurrent = Boolean(current
+      && current.provider === pick.provider
+      && current.model === pick.model
+      && (pick.effort === undefined || pick.effort === effortId));
+    return h('button', {
+      key: `chip-${slot}-${pick.provider}-${pick.model}`,
       type: 'button',
-      className: 'cmp-trigger',
-      'aria-haspopup': 'dialog',
-      'aria-expanded': open,
-      'aria-label': t('label'),
-      title: available ? t('label') : t('unavailable'),
-      disabled: locked || !available,
-      onClick: () => setOpen((value) => !value),
-      onKeyDown: (event) => {
-        if (event.key !== 'ArrowDown' || open) return;
-        event.preventDefault();
-        setOpen(true);
-      }
+      className: 'cmp-chip',
+      'data-current': isCurrent ? 'true' : undefined,
+      'aria-current': isCurrent ? 'true' : undefined,
+      disabled: locked || !available || busy,
+      title: pick.effortLabel ? `${pick.label} · ${pick.effortLabel}` : pick.label,
+      'aria-label': pick.effortLabel ? `${pick.label} · ${pick.effortLabel}` : pick.label,
+      onClick: () => applyPick(pick)
     },
-    h(IconBolt, {className: 'cmp-trigger-icon'}),
-    labelNode,
-    levels.length ? h('span', {className: 'cmp-trigger-effort'}, `· ${levels[displayIndex]?.name ?? ''}`) : null,
-    h(IconChevronDown, {className: 'cmp-trigger-chevron', 'data-open': open ? 'true' : undefined})),
-    card);
+    h('span', {className: 'cmp-chip-name'}, pick.label),
+    pick.effortLabel ? h('span', {className: 'cmp-chip-effort'}, pick.effortLabel) : null);
+  });
+
+  return h(React.Fragment, null,
+    h('div', {ref: stripRef, className: 'cmp-quicks'},
+      ...chips,
+      h('button', {
+        type: 'button',
+        className: 'cmp-chip cmp-chip-settings',
+        'aria-haspopup': 'dialog',
+        'aria-expanded': settingsOpen,
+        'aria-label': t('quickAdd'),
+        title: t('quickAdd'),
+        disabled: locked || !available,
+        onClick: toggleSettings
+      }, h(IconSliders)),
+      trigger),
+    card,
+    settingsPanel);
 }
 
 return {

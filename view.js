@@ -11,7 +11,14 @@ const dictionaries = {
     empty: '没有可用的模型',
     unavailable: '子智能体会话不能切换模型',
     sessionInUse: '会话正在被占用，稍后再试',
-    failed: '切换失败：{message}'
+    failed: '切换失败：{message}',
+    quickSwitch: '快捷切换',
+    quickHint: '给三个常用组合各配一个模型与推理强度，点一下输入框上方的按钮就能切过去。',
+    quickAdd: '设置快捷切换',
+    quickUnset: '未设置',
+    quickClear: '清除',
+    quickDone: '完成',
+    quickMissing: '这个模型现在不可用'
   },
   en: {
     label: 'Model and reasoning effort',
@@ -23,7 +30,14 @@ const dictionaries = {
     empty: 'No models available',
     unavailable: 'Subagent sessions cannot switch models',
     sessionInUse: 'The session is in use — try again in a moment',
-    failed: 'Could not switch: {message}'
+    failed: 'Could not switch: {message}',
+    quickSwitch: 'Quick switch',
+    quickHint: 'Give each of the three slots a model and reasoning effort; one click in the composer switches to it.',
+    quickAdd: 'Set up quick switch',
+    quickUnset: 'Not set',
+    quickClear: 'Clear',
+    quickDone: 'Done',
+    quickMissing: 'That model is unavailable right now'
   }
 };
 
@@ -45,6 +59,60 @@ function IconChevronRight(props) {
 function IconCheck(props) {
   return h('svg', {viewBox: '0 0 18 18', width: 14, height: 14, fill: 'none', 'aria-hidden': true, ...props},
     h('path', {d: 'M3.8 9.6 7.2 13 14.4 5.4', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round'}));
+}
+
+function IconSliders(props) {
+  return h('svg', {viewBox: '0 0 18 18', width: 14, height: 14, fill: 'none', 'aria-hidden': true, ...props},
+    h('path', {d: 'M3 5.5h12M3 12.5h12', stroke: 'currentColor', strokeWidth: 1.4, strokeLinecap: 'round'}),
+    h('circle', {cx: 7, cy: 5.5, r: 1.8, fill: 'var(--cmp-quick-surface, #fff)', stroke: 'currentColor', strokeWidth: 1.4}),
+    h('circle', {cx: 11.5, cy: 12.5, r: 1.8, fill: 'var(--cmp-quick-surface, #fff)', stroke: 'currentColor', strokeWidth: 1.4}));
+}
+
+const QUICK_KEY = 'codex-model-picker:quick-picks:v1';
+const QUICK_LIMIT = 3;
+
+function readQuickPicks() {
+  const slots = [null, null, null];
+  try {
+    const raw = window.localStorage?.getItem(QUICK_KEY);
+    if (!raw) return slots;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return slots;
+    parsed
+      .filter((pick) => pick && typeof pick.provider === 'string' && typeof pick.model === 'string')
+      .slice(0, QUICK_LIMIT)
+      .forEach((pick, index) => {
+        slots[index] = {
+          provider: pick.provider,
+          model: pick.model,
+          effort: typeof pick.effort === 'string' ? pick.effort : undefined,
+          label: typeof pick.label === 'string' ? pick.label : pick.model,
+          effortLabel: typeof pick.effortLabel === 'string' ? pick.effortLabel : pick.effort
+        };
+      });
+    return slots;
+  } catch {
+    return slots;
+  }
+}
+
+function writeQuickPicks(picks) {
+  try {
+    window.localStorage?.setItem(QUICK_KEY, JSON.stringify(picks));
+  } catch {}
+}
+
+function makePick(group, model, effortId, t) {
+  const levels = effortLevels(model.reasoning, t);
+  const valid = levels.some((level) => level.id === effortId) ? effortId : preferredEffortId(levels, model.reasoning);
+  const level = levels.find((candidate) => candidate.id === valid);
+  return {
+    provider: group.id,
+    model: model.id,
+    effort: valid,
+    label: model.name ?? model.id,
+    effortLabel: level?.name
+  };
 }
 
 function findModel(groups, selection) {
@@ -225,6 +293,11 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
   const [position, setPosition] = React.useState(null);
   const [previewIndex, setPreviewIndex] = React.useState(null);
   const handlePreview = React.useCallback((next) => setPreviewIndex(next), []);
+  const [picks, setPicks] = React.useState(readQuickPicks);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [settingsPos, setSettingsPos] = React.useState(null);
+  const stripRef = React.useRef(null);
+  const settingsRef = React.useRef(null);
   const triggerRef = React.useRef(null);
   const cardRef = React.useRef(null);
   const loadRef = React.useRef(load);
@@ -286,6 +359,38 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
     loadRef.current?.();
   }, [open]);
 
+  const placeSettings = React.useCallback(() => {
+    const anchor = stripRef.current?.getBoundingClientRect();
+    if (!anchor) return;
+    const margin = 8;
+    const gap = 8;
+    const width = Math.min(404, window.innerWidth - margin * 2);
+    const height = settingsRef.current?.offsetHeight ?? 0;
+    const left = Math.max(margin, Math.min(anchor.left, window.innerWidth - width - margin));
+    let above = true;
+    let top = anchor.top - gap - height;
+    if (top < margin) {
+      above = false;
+      top = Math.min(anchor.bottom + gap, window.innerHeight - height - margin);
+    }
+    setSettingsPos({left, top, width, above});
+  }, []);
+
+  React.useLayoutEffect(() => {
+    if (settingsOpen) placeSettings();
+  }, [settingsOpen, picks, placeSettings]);
+
+  React.useEffect(() => {
+    if (!settingsOpen) return;
+    const onMove = () => placeSettings();
+    window.addEventListener('resize', onMove);
+    document.addEventListener('scroll', onMove, true);
+    return () => {
+      window.removeEventListener('resize', onMove);
+      document.removeEventListener('scroll', onMove, true);
+    };
+  }, [settingsOpen, placeSettings]);
+
   React.useEffect(() => {
     if (!open) return;
     const onMove = () => place();
@@ -298,18 +403,23 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
   }, [open, place]);
 
   React.useEffect(() => {
-    if (!open) return;
+    if (!open && !settingsOpen) return;
     const onDown = (event) => {
       const target = event.target;
-      if (triggerRef.current?.contains(target) || cardRef.current?.contains(target)) return;
+      if (triggerRef.current?.contains(target)) return;
+      if (cardRef.current?.contains(target)) return;
+      if (settingsRef.current?.contains(target)) return;
+      if (stripRef.current?.contains(target)) return;
       setOpen(false);
       setListOpen(false);
+      setSettingsOpen(false);
     };
     const onKey = (event) => {
       if (event.key !== 'Escape') return;
       event.stopPropagation();
       setOpen(false);
       setListOpen(false);
+      setSettingsOpen(false);
       triggerRef.current?.focus();
     };
     document.addEventListener('pointerdown', onDown, true);
@@ -318,7 +428,7 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
       document.removeEventListener('pointerdown', onDown, true);
       document.removeEventListener('keydown', onKey, true);
     };
-  }, [open]);
+  }, [open, settingsOpen]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -385,6 +495,59 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
     const next = event.key === 'ArrowDown' ? Math.min(options.length - 1, active + 1) : Math.max(0, active - 1);
     event.preventDefault();
     options[next]?.focus();
+  };
+
+  const assignSlot = (slot, pick) => {
+    const next = picks.slice();
+    next[slot] = pick;
+    setPicks(next);
+    writeQuickPicks(next);
+  };
+
+  const quickModelChange = (slot, value) => {
+    if (!value) {
+      assignSlot(slot, null);
+      return;
+    }
+    const [providerId, modelId] = value.split('\u001f');
+    const group = (state.groups || []).find((candidate) => candidate.id === providerId);
+    const model = group?.models?.find((candidate) => candidate.id === modelId);
+    if (!group || !model) return;
+    assignSlot(slot, makePick(group, model, picks[slot]?.effort, t));
+  };
+
+  const quickEffortChange = (slot, value) => {
+    const pick = picks[slot];
+    if (!pick) return;
+    const model = findModel(state.groups, pick)?.model;
+    const level = effortLevels(model?.reasoning, t).find((candidate) => candidate.id === value);
+    if (!level) return;
+    assignSlot(slot, {...pick, effort: level.id, effortLabel: level.name});
+  };
+
+  const applyPick = (pick) => {
+    if (!pick || busy || !available) return;
+    const model = findModel(state.groups, pick)?.model;
+    if (!model) {
+      setToast(t('quickMissing'));
+      return;
+    }
+    const nextLevels = effortLevels(model.reasoning, t);
+    const keep = pick.effort && nextLevels.some((level) => level.id === pick.effort)
+      ? pick.effort
+      : preferredEffortId(nextLevels, model.reasoning);
+    commit({
+      provider: pick.provider,
+      model: pick.model,
+      ...(keep === undefined ? {} : {reasoningEffort: keep})
+    });
+  };
+
+  const toggleSettings = () => {
+    setSettingsOpen((value) => {
+      if (!value) setOpen(false);
+      return !value;
+    });
   };
 
   const fallbackLabel = h('span', {className: 'cmp-trigger-label'}, modelName);
@@ -467,28 +630,115 @@ function CodexPicker({locked, available, directory, load, select, t, renderSlot}
   levels.length >= 2 ? h(EffortSlider, {levels, index, preview: previewIndex, busy, onCommit: commitEffortAt, onPreview: handlePreview, t}) : null,
   toast ? h('div', {className: 'cmp-error', role: 'alert'}, toast) : null), document.body) : null;
 
-  return h(React.Fragment, null,
-    h('button', {
-      ref: triggerRef,
+  const settingsPanel = settingsOpen ? createPortal(h('div', {
+    ref: settingsRef,
+    className: 'cmp-card cmp-settings',
+    role: 'dialog',
+    'aria-label': t('quickSwitch'),
+    'data-placement': settingsPos?.above === false ? 'below' : 'above',
+    style: settingsPos
+      ? {left: settingsPos.left, top: settingsPos.top, width: settingsPos.width}
+      : {left: 0, top: 0, visibility: 'hidden'}
+  },
+  h('div', {className: 'cmp-settings-head'},
+    h('span', {className: 'cmp-settings-title'}, t('quickSwitch')),
+    h('span', {className: 'cmp-settings-count'}, `${picks.filter(Boolean).length}/${QUICK_LIMIT}`)),
+  h('div', {className: 'cmp-settings-hint'}, t('quickHint')),
+  picks.map((pick, slot) => {
+    const slotModel = pick ? findModel(state.groups, pick)?.model : undefined;
+    const slotLevels = effortLevels(slotModel?.reasoning, t);
+    return h('div', {key: `slot-${slot}`, className: 'cmp-settings-row'},
+      h('span', {className: 'cmp-settings-index', 'aria-hidden': true}, String(slot + 1)),
+      h('select', {
+        className: 'cmp-select cmp-select-model',
+        value: pick ? `${pick.provider}\u001f${pick.model}` : '',
+        disabled: !available,
+        'aria-label': `${t('quickSwitch')} ${slot + 1}`,
+        onChange: (event) => quickModelChange(slot, event.target.value)
+      },
+      h('option', {value: ''}, t('quickUnset')),
+      (state.groups || []).map((group) => h('optgroup', {key: `sg-${slot}-${group.id}`, label: group.name ?? group.id},
+        (group.models || []).map((candidate) => h('option', {
+          key: `sm-${slot}-${group.id}-${candidate.id}`,
+          value: `${group.id}\u001f${candidate.id}`
+        }, candidate.name ?? candidate.id))))),
+      h('select', {
+        className: 'cmp-select cmp-select-effort',
+        value: pick?.effort ?? '',
+        disabled: !pick || slotLevels.length === 0,
+        'aria-label': `${t('effortLabel')} ${slot + 1}`,
+        onChange: (event) => quickEffortChange(slot, event.target.value)
+      },
+      slotLevels.map((level) => h('option', {key: `se-${slot}-${level.id}`, value: level.id}, level.name))),
+      h('button', {
+        type: 'button',
+        className: 'cmp-settings-clear',
+        title: t('quickClear'),
+        'aria-label': t('quickClear'),
+        disabled: !pick,
+        onClick: () => assignSlot(slot, null)
+      }, '×'));
+  }),
+  h('button', {type: 'button', className: 'cmp-settings-done', onClick: () => setSettingsOpen(false)}, t('quickDone'))), document.body) : null;
+
+  const trigger = h('button', {
+    ref: triggerRef,
+    type: 'button',
+    className: 'cmp-trigger',
+    'aria-haspopup': 'dialog',
+    'aria-expanded': open,
+    'aria-label': t('label'),
+    title: available ? t('label') : t('unavailable'),
+    disabled: locked || !available,
+    onClick: () => setOpen((value) => !value),
+    onKeyDown: (event) => {
+      if (event.key !== 'ArrowDown' || open) return;
+      event.preventDefault();
+      setOpen(true);
+    }
+  },
+  h(IconBolt, {className: 'cmp-trigger-icon'}),
+  labelNode,
+  levels.length ? h('span', {className: 'cmp-trigger-effort'}, `· ${levels[displayIndex]?.name ?? ''}`) : null,
+  h(IconChevronDown, {className: 'cmp-trigger-chevron', 'data-open': open ? 'true' : undefined}));
+
+  const chips = picks.map((pick, slot) => {
+    if (!pick) return null;
+    const isCurrent = Boolean(current
+      && current.provider === pick.provider
+      && current.model === pick.model
+      && (pick.effort === undefined || pick.effort === effortId));
+    return h('button', {
+      key: `chip-${slot}-${pick.provider}-${pick.model}`,
       type: 'button',
-      className: 'cmp-trigger',
-      'aria-haspopup': 'dialog',
-      'aria-expanded': open,
-      'aria-label': t('label'),
-      title: available ? t('label') : t('unavailable'),
-      disabled: locked || !available,
-      onClick: () => setOpen((value) => !value),
-      onKeyDown: (event) => {
-        if (event.key !== 'ArrowDown' || open) return;
-        event.preventDefault();
-        setOpen(true);
-      }
+      className: 'cmp-chip',
+      'data-current': isCurrent ? 'true' : undefined,
+      'aria-current': isCurrent ? 'true' : undefined,
+      disabled: locked || !available || busy,
+      title: pick.effortLabel ? `${pick.label} · ${pick.effortLabel}` : pick.label,
+      'aria-label': pick.effortLabel ? `${pick.label} · ${pick.effortLabel}` : pick.label,
+      onClick: () => applyPick(pick)
     },
-    h(IconBolt, {className: 'cmp-trigger-icon'}),
-    labelNode,
-    levels.length ? h('span', {className: 'cmp-trigger-effort'}, `· ${levels[displayIndex]?.name ?? ''}`) : null,
-    h(IconChevronDown, {className: 'cmp-trigger-chevron', 'data-open': open ? 'true' : undefined})),
-    card);
+    h('span', {className: 'cmp-chip-name'}, pick.label),
+    pick.effortLabel ? h('span', {className: 'cmp-chip-effort'}, pick.effortLabel) : null);
+  });
+
+  return h(React.Fragment, null,
+    h('div', {ref: stripRef, className: 'cmp-quicks'},
+      ...chips,
+      h('button', {
+        type: 'button',
+        className: 'cmp-chip cmp-chip-settings',
+        'aria-haspopup': 'dialog',
+        'aria-expanded': settingsOpen,
+        'aria-label': t('quickAdd'),
+        title: t('quickAdd'),
+        disabled: locked || !available,
+        onClick: toggleSettings
+      }, h(IconSliders)),
+      trigger),
+    card,
+    settingsPanel);
 }
 
 return {
